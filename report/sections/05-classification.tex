@@ -1,0 +1,48 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}} % Images path
+
+\begin{document}
+
+\section{Classification}\label{sec:classification}
+
+In order to perform the scene recognition task, two main classes of classifiers have been implemented: K-Nearest Neighbors (KNN) and Support Vector Machines (SVM). 
+
+\subsection{K-Nearest Neighbors (KNN)}\label{subsec:knn}
+
+A K-Nearest Neighbors classifier taking as input features the normalized
+histograms of visual words has been implemented. The classifier assigns to each
+image in the test set the label of the majority class among its $k$ nearest
+neighbors\footnote{Notice $k$ is the number of KNN neighbors, not to be confused with the number of clusters $K$.} in the training set.\\
+In the simple case of $k=1$, the label of the closest histogram in the training set is assigned to the test image. 
+A slightly better result can be achieved by performing a linear search for the
+hyperparameter $k$ over the range $[1, 50]$ using the average accuracy as assessment metric. For each value of $k$ in the range, the accuracy of the corresponding KNN classifier is computed and stored. At the end, the value of $k$ that maximizes the accuracy is selected and the performance of the resulting classifier is evaluated. 
+
+\subsection{Support Vector Machines (SVM)}\label{subsec:svm}
+
+A series of multi-class Support Vector Machine (SVM) classifiers have been implemented
+following the ``\textit{one-vs-all}'' strategy. For each possible class, a
+single binary classifier is trained and the final prediction is obtained by
+selecting the class with the highest confidence score. Each binary classifier is
+trained taking as input features one of the presented image representations and
+modified ground truth labels where the class of interest is labeled as $+1$ and
+all other classes are labeled as $-1$.\\
+Different kernels for these SVM classifiers have been tested and compared.
+Initially, the default radial basis function (RBF) kernel has been adopted. Its
+performance has then been compared with the generalized Gaussian kernel (with
+$\gamma = \nicefrac{1}{2}$) based on
+the $\chi^2$ distance and the histogram
+intersection kernel in equation~\ref{eq:chi2-int-kernels}, both widely
+adopted in histogram comparison tasks.
+\begin{equation}\label{eq:chi2-int-kernels}
+	k_{\chi^2}(\mathbf{x}, \mathbf{x}') = \exp\left(-\gamma \sum_i \frac{({x}_i
+	- {x}'_i)^2}{{x}_i + {x}'_i}\right) 
+	\quad \quad
+	k_{\cap}(\mathbf{x}, \mathbf{x}') = \sum_i \min({x}_i, {x}'_i)
+\end{equation}
+
+For the \itt{SPM} feature representation, the SVM classifiers only used
+the histogram intersection kernel as anticipated in the previous section and
+pyramid levels up to $L=2$.
+
+\end{document}
+
